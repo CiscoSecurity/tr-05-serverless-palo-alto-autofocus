@@ -13,34 +13,40 @@ def wrong_calls():
     yield WrongCall(
         '/tiles/tile',
         {'tile_id': 'some_value'},
+        "Invalid JSON payload received. "
         "{'tile-id': ['Missing data for required field.'], "
         "'tile_id': ['Unknown field.']}"
     )
     yield WrongCall(
         '/tiles/tile',
         {'tile-id': ''},
+        "Invalid JSON payload received. "
         "{'tile-id': ['Field may not be blank.']}"
     )
     yield WrongCall(
         '/tiles/tile-data',
         {'tile_id': 'some_value', 'period': 'some_period'},
+        "Invalid JSON payload received. "
         "{'tile-id': ['Missing data for required field.'], "
         "'tile_id': ['Unknown field.']}"
     )
     yield WrongCall(
         '/tiles/tile-data',
         {'tile-id': '', 'period': 'some_period'},
+        "Invalid JSON payload received. "
         "{'tile-id': ['Field may not be blank.']}"
     )
     yield WrongCall(
         '/tiles/tile-data',
         {'tile-id': 'some_value', 'not_period': 'some_period'},
+        "Invalid JSON payload received. "
         "{'period': ['Missing data for required field.'], "
         "'not_period': ['Unknown field.']}"
     )
     yield WrongCall(
         '/tiles/tile-data',
         {'tile-id': 'some_value', 'period': ''},
+        "Invalid JSON payload received. "
         "{'period': ['Field may not be blank.']}"
     )
 
