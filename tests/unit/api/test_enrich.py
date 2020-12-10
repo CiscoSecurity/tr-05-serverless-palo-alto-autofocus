@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from pytest import fixture
 
+from api.errors import INVALID_ARGUMENT
 from api.schemas import OBSERVABLE_TYPE_CHOICES
 from .utils import get_headers
 
@@ -29,13 +30,14 @@ def invalid_json_type():
 
 def test_enrich_call_with_valid_jwt_but_invalid_json_value(
         route, client, valid_jwt, invalid_json_value,
-        invalid_json_expected_payload
+        exception_expected_payload
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_value)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         "Invalid JSON payload received. "
         "{0: {'value': ['Field may not be blank.']}}"
     )
@@ -43,14 +45,15 @@ def test_enrich_call_with_valid_jwt_but_invalid_json_value(
 
 def test_enrich_call_with_valid_jwt_but_invalid_json_type(
         route, client, valid_jwt, invalid_json_type,
-        invalid_json_expected_payload
+        exception_expected_payload
 ):
     allowed_fields = ", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_type)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         'Invalid JSON payload received. '
         '{0: {\'type\': ["Must be one of: ' + allowed_fields + '."]}}'
     )

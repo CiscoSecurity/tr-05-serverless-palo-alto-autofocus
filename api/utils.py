@@ -1,8 +1,13 @@
 from authlib.jose import jwt
 from authlib.jose.errors import DecodeError, BadSignatureError
 from flask import request, current_app, jsonify
+from requests.exceptions import SSLError
 
-from api.errors import AuthorizationError, InvalidArgumentError
+from api.errors import (
+    AuthorizationError,
+    InvalidArgumentError,
+    AutofocusSSLError
+)
 
 
 def get_auth_token():
@@ -25,7 +30,7 @@ def get_auth_token():
         raise AuthorizationError(expected_errors[error.__class__])
 
 
-def get_jwt():
+def get_api_key():
     """
     Parse the incoming request's Authorization Bearer JWT for some credentials.
     Validate its signature against the application's secret key.
@@ -74,3 +79,12 @@ def jsonify_data(data):
 
 def jsonify_errors(data):
     return jsonify({'errors': [data]})
+
+
+def catch_ssl_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except SSLError as error:
+            raise AutofocusSSLError(error)
+    return wrapper
