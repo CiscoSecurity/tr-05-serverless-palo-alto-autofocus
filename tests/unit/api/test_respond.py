@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from pytest import fixture
 
+from api.errors import INVALID_ARGUMENT
 from api.schemas import OBSERVABLE_TYPE_CHOICES
 from .utils import get_headers
 
@@ -52,13 +53,14 @@ def invalid_json_observable_value():
 
 def test_respond_call_with_valid_jwt_but_invalid_json_value(
         client, valid_jwt, invalid_json_value,
-        invalid_json_expected_payload, route='/respond/observables'
+        exception_expected_payload, route='/respond/observables'
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_value)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         "Invalid JSON payload received. "
         "{0: {'value': ['Field may not be blank.']}}"
     )
@@ -66,13 +68,14 @@ def test_respond_call_with_valid_jwt_but_invalid_json_value(
 
 def test_respond_call_with_valid_jwt_but_invalid_json_type(
         client, valid_jwt, invalid_json_type,
-        invalid_json_expected_payload, route='/respond/observables'
+        exception_expected_payload, route='/respond/observables'
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_type)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         'Invalid JSON payload received. '
         '{0: {\'type\': ["Must be one of: ' + allowed_fields + '."]}}'
     )
@@ -80,13 +83,14 @@ def test_respond_call_with_valid_jwt_but_invalid_json_type(
 
 def test_respond_call_with_valid_jwt_but_invalid_json_action_id(
         client, valid_jwt, invalid_json_action_id,
-        invalid_json_expected_payload, route='/respond/trigger'
+        exception_expected_payload, route='/respond/trigger'
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_action_id)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         "Invalid JSON payload received. "
         "{'action-id': ['Missing data for required field.']}"
     )
@@ -94,13 +98,14 @@ def test_respond_call_with_valid_jwt_but_invalid_json_action_id(
 
 def test_respond_call_with_valid_jwt_but_invalid_json_observable_type(
         client, valid_jwt, invalid_json_observable_type,
-        invalid_json_expected_payload, route='/respond/trigger'
+        exception_expected_payload, route='/respond/trigger'
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_observable_type)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         'Invalid JSON payload received. {\'observable_type\': '
         '["Must be one of: ' + allowed_fields + '."]}'
     )
@@ -108,13 +113,14 @@ def test_respond_call_with_valid_jwt_but_invalid_json_observable_type(
 
 def test_respond_call_with_valid_jwt_but_invalid_json_observable_value(
         client, valid_jwt, invalid_json_observable_value,
-        invalid_json_expected_payload, route='/respond/trigger'
+        exception_expected_payload, route='/respond/trigger'
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
                            json=invalid_json_observable_value)
     assert response.status_code == HTTPStatus.OK
-    assert response.json == invalid_json_expected_payload(
+    assert response.json == exception_expected_payload(
+        INVALID_ARGUMENT,
         "Invalid JSON payload received. "
         "{'observable_value': ['Field may not be blank.']}"
     )
