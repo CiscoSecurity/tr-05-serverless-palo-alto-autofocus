@@ -7,7 +7,7 @@ from requests.exceptions import SSLError
 from .utils import get_headers
 from api.errors import (
     AUTH_ERROR,
-    AUTOFOCUS_NOT_FOUNDED,
+    NOT_FOUNDED,
     TOO_MANY_REQUESTS,
     SERVER_ERROR,
     SSL_ERROR
@@ -61,7 +61,7 @@ def test_health_call_with_404(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == exception_expected_payload(
-        AUTOFOCUS_NOT_FOUNDED,
+        NOT_FOUNDED,
         "Autofocus not founded."
     )
 
