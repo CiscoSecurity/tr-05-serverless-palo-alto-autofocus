@@ -6,7 +6,7 @@ from requests.exceptions import SSLError
 
 from .utils import get_headers
 from api.errors import (
-    AUTOFOCUS_AUTH_ERROR,
+    AUTH_ERROR,
     AUTOFOCUS_NOT_FOUNDED,
     TOO_MANY_REQUESTS,
     SERVER_ERROR,
@@ -45,7 +45,7 @@ def test_health_call_with_401(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == exception_expected_payload(
-        AUTOFOCUS_AUTH_ERROR,
+        AUTH_ERROR,
         "Authorization failed: wrong AutoFocus credentials"
     )
 

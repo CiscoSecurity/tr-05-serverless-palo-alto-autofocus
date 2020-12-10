@@ -1,10 +1,9 @@
 AUTH_ERROR = 'authorization error'
 INVALID_ARGUMENT = 'invalid argument'
 UNKNOWN = 'unknown'
-AUTOFOCUS_AUTH_ERROR = 'autofocus credentials error'
-AUTOFOCUS_NOT_FOUNDED = 'autofocus not founded'
+AUTOFOCUS_NOT_FOUNDED = 'not founded'
 TOO_MANY_REQUESTS = 'too many requests'
-SERVER_ERROR = 'server error'
+SERVER_ERROR = 'internal error'
 SSL_ERROR = 'ssl error'
 
 
@@ -25,11 +24,11 @@ class TRFormattedError(Exception):
 class AuthorizationError(TRFormattedError):
     def __init__(self, message=None):
 
+        code = AUTH_ERROR
+
         if message:
-            code = AUTH_ERROR
             message = f'Authorization failed: {message}'
         else:
-            code = AUTOFOCUS_AUTH_ERROR
             message = "Authorization failed: wrong AutoFocus credentials"
 
         super().__init__(code, message)
