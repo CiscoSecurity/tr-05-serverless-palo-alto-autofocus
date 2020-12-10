@@ -1,7 +1,7 @@
 AUTH_ERROR = 'authorization error'
 INVALID_ARGUMENT = 'invalid argument'
 UNKNOWN = 'unknown'
-NOT_FOUNDED = 'not found'
+NOT_FOUND = 'not found'
 TOO_MANY_REQUESTS = 'too many requests'
 SERVER_ERROR = 'internal error'
 SSL_ERROR = 'ssl error'
@@ -45,7 +45,7 @@ class InvalidArgumentError(TRFormattedError):
 class AutofocusNotFoundError(TRFormattedError):
     def __init__(self):
         super().__init__(
-            NOT_FOUNDED,
+            NOT_FOUND,
             'Autofocus not founded.'
         )
 
