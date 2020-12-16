@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from pytest import fixture
 
-from api.schemas import OBSERVABLE_TYPE_CHOICES
 from .utils import get_headers, get_from_isoformat
 from tests.unit.mock_data_for_tests import (
     AUTOFOCUS_IP_RESPONSE_MOCK,
@@ -34,44 +33,47 @@ def route(request):
     return request.param
 
 
-@fixture(scope='module')
-def invalid_json_value():
-    return [{'type': 'ip', 'value': ''}]
+InvalidJsonCall = namedtuple(
+    'InvalidJsonCall', ('json', 'message_template', 'text')
+)
+
+error_message_template = {
+    'name': "Invalid JSON payload received. "
+            "{0: {'%s': ['Missing data for required field.'], "
+            "'': ['Unknown field.']}}",
+    'value': "Invalid JSON payload received. "
+             "{0: {'%s': ['Field may not be blank.']}}"
+}
 
 
-@fixture(scope='module')
-def invalid_json_type():
-    return [{'type': 'strange', 'value': 'cisco.com'}]
+def invalid_json_calls():
+    yield InvalidJsonCall([{'type': 'ip', 'value': ''}],
+                          error_message_template['value'], 'value')
+    yield InvalidJsonCall([{'type': '', 'value': 'some_value'}],
+                          error_message_template['value'], 'type')
+    yield InvalidJsonCall([{'': 'ip', 'value': '1.1.1.1'}],
+                          error_message_template['name'], 'type')
+    yield InvalidJsonCall([{'type': 'ip', '': 'some_value'}],
+                          error_message_template['name'], 'value')
 
 
-def test_enrich_call_with_valid_jwt_but_invalid_json_value(
-        route, client, valid_jwt, invalid_json_value,
+@fixture(scope='module', params=invalid_json_calls(),
+         ids=lambda call: f'{call.json}')
+def invalid_json_call(request):
+    return request.param
+
+
+def test_enrich_call_with_valid_jwt_but_invalid_json(
+        route, client, valid_jwt, invalid_json_call,
         exception_expected_payload
 ):
     response = client.post(route,
                            headers=get_headers(valid_jwt),
-                           json=invalid_json_value)
+                           json=invalid_json_call.json)
     assert response.status_code == HTTPStatus.OK
     assert response.json == exception_expected_payload(
         INVALID_ARGUMENT,
-        "Invalid JSON payload received. "
-        "{0: {'value': ['Field may not be blank.']}}"
-    )
-
-
-def test_enrich_call_with_valid_jwt_but_invalid_json_type(
-        route, client, valid_jwt, invalid_json_type,
-        exception_expected_payload
-):
-    allowed_fields = ", ".join(map(repr, OBSERVABLE_TYPE_CHOICES))
-    response = client.post(route,
-                           headers=get_headers(valid_jwt),
-                           json=invalid_json_type)
-    assert response.status_code == HTTPStatus.OK
-    assert response.json == exception_expected_payload(
-        INVALID_ARGUMENT,
-        'Invalid JSON payload received. '
-        '{0: {\'type\': ["Must be one of: ' + allowed_fields + '."]}}'
+        invalid_json_call.message_template % invalid_json_call.text
     )
 
 
@@ -80,7 +82,7 @@ Call = namedtuple('Call', ('json',
                            'integration_mock_response'))
 
 
-def calls():
+def valid_calls():
     yield Call(
         [{'type': 'ip', 'value': '103.110.84.196'}],
         AUTOFOCUS_IP_RESPONSE_MOCK, INTEGRATION_IP_RESPONSE_MOCK
@@ -105,8 +107,8 @@ def calls():
     )
 
 
-@fixture(scope='module', params=calls(), ids=lambda call: f'{call.json}')
-def call(request):
+@fixture(scope='module', params=valid_calls(), ids=lambda call: f'{call.json}')
+def valid_call(request):
     return request.param
 
 
@@ -123,17 +125,19 @@ def assert_verdicts(response, call, test_data):
 
 
 def test_enrich_call_success(
-        route, call, client, valid_jwt,
+        route, valid_call, client, valid_jwt,
         mock_request_to_autofocus, mock_autofocus_response_data
 ):
     mock_request_to_autofocus.return_value = mock_autofocus_response_data(
         status_code=HTTPStatus.OK,
-        payload=call.autofocus_mock_response
+        payload=valid_call.autofocus_mock_response
     )
     response = client.post(route, headers=get_headers(valid_jwt),
-                           json=call.json)
+                           json=valid_call.json)
     assert response.status_code == HTTPStatus.OK
 
     response = response.json
     if route == '/deliberate/observables':
-        assert_verdicts(response, call, call.integration_mock_response[route])
+        assert_verdicts(
+            response, valid_call, valid_call.integration_mock_response[route]
+        )
