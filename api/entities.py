@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from flask import current_app
-
 
 class Entity:
 
-    def __init__(self, response, observable):
+    def __init__(self, response, observable, status_mapping, entity_lifetime):
         self.response = response
         self.observable = observable
+        self.status_mapping = status_mapping
+        self.entity_lifetime = entity_lifetime
 
     def get_verdict(self):
         disposition, disposition_name = self._get_disposition()
@@ -24,14 +24,13 @@ class Entity:
         pass
 
     def _get_disposition(self):
-        status_mapping = current_app.config['STATUS_MAPPING']
         source = self.response['indicator']['latestPanVerdicts']
 
         key = 'WF_SAMPLE' if source.get('WF_SAMPLE') else 'PAN_DB'
 
         return (
-            status_mapping[source[key]]['disposition'],
-            status_mapping[source[key]]['disposition_name']
+            self.status_mapping[source[key]]['disposition'],
+            self.status_mapping[source[key]]['disposition_name']
         )
 
     def _get_observable(self):
@@ -47,7 +46,7 @@ class Entity:
             end_time = 'indefinite'
         else:
             end_time = self._time_to_ctr_format(
-                start_time + current_app.config['ENTITY_LIFETIME']
+                start_time + self.entity_lifetime
             )
 
         return {

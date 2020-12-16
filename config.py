@@ -16,7 +16,7 @@ class Config:
 
     HEALTH_OBSERVABLE = {'type': 'domain', 'value': 'cisco.com'}
 
-    EXPECTED_TYPES = ('ip', 'ipv6', 'domain', 'url', 'sha256')
+    SUPPORTED_TYPES = ('ip', 'ipv6', 'domain', 'url', 'sha256')
 
     ENTITY_LIFETIME = timedelta(days=7)
 

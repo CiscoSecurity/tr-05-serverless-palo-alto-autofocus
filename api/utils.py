@@ -112,9 +112,11 @@ def remove_duplicates(sequence):
 
 
 def filter_observables(observables):
-    expected_types = current_app.config['EXPECTED_TYPES']
+    supported_types = current_app.config['SUPPORTED_TYPES']
     observables = remove_duplicates(observables)
-    return list(filter(lambda obs: obs['type'] in expected_types, observables))
+    return list(
+        filter(lambda obs: obs['type'] in supported_types, observables)
+    )
 
 
 def get_workers(required_number):
