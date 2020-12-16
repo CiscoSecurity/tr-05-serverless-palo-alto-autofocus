@@ -22,8 +22,6 @@ get_observables = partial(get_json, schema=ObservableSchema(many=True))
 @enrich_api.route('/deliberate/observables', methods=['POST'])
 def deliberate_observables():
     api_key = get_api_key()
-    status_mapping = current_app.config['STATUS_MAPPING']
-    entity_lifetime = current_app.config['ENTITY_LIFETIME']
     observables = filter_observables(get_observables())
 
     if not observables:
@@ -43,8 +41,6 @@ def deliberate_observables():
             lambda observable: Entity(
                 response=client.get_tic_indicator_data(observable),
                 observable=observable,
-                status_mapping=status_mapping,
-                entity_lifetime=entity_lifetime
             ), observables)
 
     for entity in entities:

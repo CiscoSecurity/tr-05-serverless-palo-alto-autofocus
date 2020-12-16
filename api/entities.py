@@ -1,13 +1,31 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+
+ENTITY_LIFETIME = timedelta(days=7)
+STATUS_MAPPING = {
+    'BENIGN': {
+        'disposition': 1,
+        'disposition_name': 'Clean'
+    },
+    'MALWARE': {
+        'disposition': 2,
+        'disposition_name': 'Malicious'
+    },
+    'PHISHING': {
+        'disposition': 2,
+        'disposition_name': 'Malicious'
+    },
+    'GRAYWARE': {
+        'disposition': 3,
+        'disposition_name': 'Suspicious'
+    }
+}
 
 
 class Entity:
 
-    def __init__(self, response, observable, status_mapping, entity_lifetime):
+    def __init__(self, response, observable):
         self.response = response
         self.observable = observable
-        self.status_mapping = status_mapping
-        self.entity_lifetime = entity_lifetime
 
     def get_verdict(self):
         disposition, disposition_name = self._get_disposition()
@@ -29,8 +47,8 @@ class Entity:
         key = 'WF_SAMPLE' if source.get('WF_SAMPLE') else 'PAN_DB'
 
         return (
-            self.status_mapping[source[key]]['disposition'],
-            self.status_mapping[source[key]]['disposition_name']
+            STATUS_MAPPING[source[key]]['disposition'],
+            STATUS_MAPPING[source[key]]['disposition_name']
         )
 
     def _get_observable(self):
@@ -46,7 +64,7 @@ class Entity:
             end_time = 'indefinite'
         else:
             end_time = self._time_to_ctr_format(
-                start_time + self.entity_lifetime
+                start_time + ENTITY_LIFETIME
             )
 
         return {
