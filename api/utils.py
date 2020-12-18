@@ -1,6 +1,8 @@
+from os import cpu_count
+
 from authlib.jose import jwt
 from authlib.jose.errors import DecodeError, BadSignatureError
-from flask import request, current_app, jsonify
+from flask import request, current_app, jsonify, g
 from requests.exceptions import SSLError
 
 from api.errors import (
@@ -73,8 +75,21 @@ def get_json(schema):
     return data
 
 
-def jsonify_data(data):
-    return jsonify({'data': data})
+def format_data(data):
+    return {'count': len(data), 'docs': data}
+
+
+def jsonify_data(data=None):
+
+    if data is not None:
+        return jsonify({'data': data})
+
+    result = {'data': {}}
+
+    if g.get('verdicts'):
+        result['data']['verdicts'] = format_data(g.verdicts)
+
+    return jsonify(result)
 
 
 def jsonify_errors(data):
@@ -88,3 +103,21 @@ def catch_ssl_error(func):
         except SSLError as error:
             raise AutofocusSSLError(error)
     return wrapper
+
+
+def remove_duplicates(sequence):
+    return [
+        el for ind, el in enumerate(sequence) if el not in sequence[ind + 1:]
+    ]
+
+
+def filter_observables(observables):
+    supported_types = current_app.config['SUPPORTED_TYPES']
+    observables = remove_duplicates(observables)
+    return list(
+        filter(lambda obs: obs['type'] in supported_types, observables)
+    )
+
+
+def get_workers(required_number):
+    return min(required_number, (cpu_count() or 1) * 5) or 1
