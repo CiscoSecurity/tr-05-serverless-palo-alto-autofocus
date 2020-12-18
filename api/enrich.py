@@ -28,6 +28,7 @@ def deliberate_observables():
         return jsonify_data()
 
     g.verdicts = []
+    ApiClient.health_test_observable = current_app.config['HEALTH_OBSERVABLE']
     client = ApiClient(
         api_key=api_key,
         base_url=current_app.config['AUTOFOCUS_API_URL'],

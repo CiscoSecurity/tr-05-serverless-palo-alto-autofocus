@@ -61,17 +61,15 @@ class Entity:
         start_time = datetime.utcnow()
 
         if self.observable['type'] == 'sha256':
-            end_time = 'indefinite'
-        else:
-            end_time = self._time_to_ctr_format(
-                start_time + ENTITY_LIFETIME
-            )
+            return {'start_time': self._time_to_ctr_format(start_time)}
 
-        return {
-            'start_time': self._time_to_ctr_format(start_time),
-            'end_time': self._time_to_ctr_format(end_time)
-        }
+        else:
+            end_time = start_time + ENTITY_LIFETIME
+            return {
+                'start_time': self._time_to_ctr_format(start_time),
+                'end_time': self._time_to_ctr_format(end_time)
+            }
 
     @staticmethod
     def _time_to_ctr_format(time):
-        return time.isoformat() + 'Z' if isinstance(time, datetime) else time
+        return time.isoformat() + 'Z'

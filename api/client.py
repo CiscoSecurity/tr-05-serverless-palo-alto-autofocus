@@ -12,6 +12,7 @@ from api.errors import (
 
 
 class ApiClient:
+    health_test_observable = None
 
     def __init__(self, api_key, base_url, user_agent=None):
         self.api_key = api_key
@@ -25,7 +26,7 @@ class ApiClient:
             headers=self._get_headers(),
             params=self._get_tic_params(observable)
         )
-        return self._get_response_data(response)
+        return self._get_response_data(response, observable)
 
     def get_tic_indicator_data(self, observable):
         return self.get_autofocus_data(observable, 'tic')
@@ -57,11 +58,9 @@ class ApiClient:
             headers.update({'User-Agent': self.user_agent})
         return headers
 
-    @staticmethod
-    def _get_response_data(response):
+    def _get_response_data(self, response, observable):
         expected_errors = {
             HTTPStatus.UNAUTHORIZED: AuthorizationError,
-            HTTPStatus.NOT_FOUND: AutofocusNotFoundError,
             HTTPStatus.TOO_MANY_REQUESTS: AutofocusTooManyRequestsError
         }
 
@@ -69,5 +68,13 @@ class ApiClient:
             return response.json()
         elif response.status_code >= 500:
             raise AutofocusServerError
+        elif response.status_code == HTTPStatus.NOT_FOUND:
+            # in some cases, when AutoFocus can't find observable,
+            # it returns 404
+            if observable != self.health_test_observable:
+                return {}
+            else:
+                raise AutofocusNotFoundError
+
         elif response.status_code in expected_errors:
             raise expected_errors[response.status_code]()

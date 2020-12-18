@@ -77,37 +77,53 @@ def test_enrich_call_with_valid_jwt_but_invalid_json(
     )
 
 
-Call = namedtuple('Call', ('json',
+Call = namedtuple('Call', ('json', 'message',
                            'autofocus_mock_response',
                            'integration_mock_response'))
 
 
 def valid_calls():
     yield Call(
-        [{'type': 'ip', 'value': '103.110.84.196'}],
+        [{'type': 'ip', 'value': '103.110.84.196'}], 'ip',
         AUTOFOCUS_IP_RESPONSE_MOCK, INTEGRATION_IP_RESPONSE_MOCK
     )
     yield Call(
         [{'type': 'ipv6', 'value': '2001:db8:85a3:8d3:1319:8a2e:370:7348'}],
-        AUTOFOCUS_IPV6_RESPONSE_MOCK, INTEGRATION_IPV6_RESPONSE_MOCK
+        'ipv6', AUTOFOCUS_IPV6_RESPONSE_MOCK, INTEGRATION_IPV6_RESPONSE_MOCK
     )
     yield Call(
-        [{'type': 'domain', 'value': 'cisco.com'}],
+        [{'type': 'domain', 'value': 'cisco.com'}], 'domain',
         AUTOFOCUS_DOMAIN_RESPONSE_MOCK, INTEGRATION_DOMAIN_RESPONSE_MOCK
     )
     yield Call(
         [{'type': 'url', 'value': 'http://0win365.com/wp-admin/sites/'}],
-        AUTOFOCUS_URL_RESPONSE_MOCK, INTEGRATION_URL_RESPONSE_MOCK
+        'url', AUTOFOCUS_URL_RESPONSE_MOCK, INTEGRATION_URL_RESPONSE_MOCK
     )
     yield Call(
         [{'type': 'sha256',
           'value': '7fa2c54d7dabb0503d75bdd13cc4d6a'
-                   '6520516a990fb7879ae052bad9520763b'}],
+                   '6520516a990fb7879ae052bad9520763b'}], 'sha256',
         AUTOFOCUS_SHA256_RESPONSE_MOCK, INTEGRATION_SHA256_RESPONSE_MOCK
+    )
+    yield Call(
+        [
+            {'type': 'ip', 'value': '103.110.84.196'},
+            {'type': 'ip', 'value': '103.110.84.196'}
+        ], 'two same observables',
+        AUTOFOCUS_IP_RESPONSE_MOCK, INTEGRATION_IP_RESPONSE_MOCK
+    )
+    yield Call(
+        [
+            {'type': 'ip', 'value': '103.110.84.196'},
+            {'type': 'md5', 'value': 'm3n4cv53m45c345m34c5m3c5'}
+        ], 'unsupported type',
+        AUTOFOCUS_IP_RESPONSE_MOCK, INTEGRATION_IP_RESPONSE_MOCK
     )
 
 
-@fixture(scope='module', params=valid_calls(), ids=lambda call: f'{call.json}')
+@fixture(
+    scope='module', params=valid_calls(), ids=lambda call: f'{call.message}'
+)
 def valid_call(request):
     return request.param
 
@@ -115,7 +131,7 @@ def valid_call(request):
 def assert_verdicts(response, call, test_data):
     valid_time = response['data']['verdicts']['docs'][0].pop('valid_time')
     if call.json[0]['type'] == 'sha256':
-        assert valid_time['end_time'] == 'indefinite'
+        assert valid_time['start_time']
     else:
         start_time = get_from_isoformat(valid_time['start_time'])
         end_time = get_from_isoformat(valid_time['end_time'])
@@ -141,3 +157,25 @@ def test_enrich_call_success(
         assert_verdicts(
             response, valid_call, valid_call.integration_mock_response[route]
         )
+
+
+@fixture(scope='module')
+def observable_404():
+    return [{'type': 'sha256', 'value': 'anaptanium'}]
+
+
+def test_enrich_call_with_404_observable(
+        route, client, valid_jwt, observable_404,
+        mock_request_to_autofocus, mock_autofocus_response_data,
+
+):
+    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
+        status_code=HTTPStatus.NOT_FOUND
+    )
+    response = client.post(route, headers=get_headers(valid_jwt),
+                           json=observable_404)
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == (
+        {'data': {}} if route != '/refer/observables' else {'data': []}
+    )
