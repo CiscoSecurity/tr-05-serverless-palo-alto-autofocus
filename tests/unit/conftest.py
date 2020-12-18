@@ -35,6 +35,11 @@ def valid_jwt(client):
     return jwt.encode(header, payload, secret_key).decode('ascii')
 
 
+@fixture(scope='module')
+def valid_json():
+    return [{'type': 'domain', 'value': 'cisco.com'}]
+
+
 @fixture(scope='function')
 def mock_request_to_autofocus():
     with patch('requests.get') as mock_request:
