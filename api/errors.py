@@ -77,3 +77,12 @@ class AutofocusSSLError(TRFormattedError):
             SSL_ERROR,
             f'Unable to verify SSL certificate: {message}.'
         )
+
+
+class AutofocusDataError(TRFormattedError):
+    def __init__(self):
+        super().__init__(
+            SERVER_ERROR,
+            'AutoFocus data structure is wrong or damaged. '
+            'If error is repeated, please call support.'
+        )

@@ -1,6 +1,13 @@
 from datetime import datetime, timedelta
+from urllib.parse import quote_plus, urljoin
+from uuid import uuid4
+
+from api.errors import AutofocusDataError
 
 ENTITY_LIFETIME = timedelta(days=7)
+
+SCHEMA_VERSION = '1.0.22'
+
 STATUS_MAPPING = {
     'BENIGN': {
         'disposition': 1,
@@ -20,6 +27,29 @@ STATUS_MAPPING = {
     }
 }
 
+DEFAULT_VERDICT = {'type': 'verdict'}
+
+DEFAULT_JUDGEMENT = {
+    'confidence': 'High',
+    'priority': 85,
+    'schema_version': SCHEMA_VERSION,
+    'severity': 'High',
+    'source': 'Palo Alto AutoFocus',
+    'type': 'judgement',
+}
+
+BASE_AUTOFOKUS_URI = (
+    'https://autofocus.paloaltonetworks.com/#/search/indicator/'
+)
+
+URI_MAPPING = {
+    'ip': 'ipv4_address/{value}',
+    'ipv6': 'ipv6_address/{value}',
+    'domain': 'domain/{value}',
+    'url': 'url/{value}/summary',
+    'sha256': 'sha256/{value}'
+}
+
 
 class Entity:
 
@@ -31,24 +61,59 @@ class Entity:
         disposition, disposition_name = self._get_disposition()
 
         return {
-            'type': 'verdict',
             'observable': self._get_observable(),
             'disposition': disposition,
             'disposition_name': disposition_name,
             'valid_time': self._get_valid_time(),
+            **DEFAULT_VERDICT
         }
 
     def get_judgement(self):
-        pass
+        disposition, disposition_name = self._get_disposition()
+
+        return {
+            'disposition': disposition,
+            'disposition_name': disposition_name,
+            'id': self._get_transient_id(),
+            'observable': self._get_observable(),
+            'valid_time': self._get_valid_time(),
+            'source_uri': self._get_source_uri(),
+            'reason': self._get_reason(),
+            **DEFAULT_JUDGEMENT
+        }
+
+    def _get_source_uri(self):
+        obs_type, value = self.observable['type'], self.observable['value']
+
+        if obs_type == 'url':
+            value = quote_plus(value)
+
+        uri = urljoin(
+            BASE_AUTOFOKUS_URI, URI_MAPPING[obs_type].format(value=value),
+            allow_fragments=False
+        )
+        return uri
+
+    def _get_reason(self):
+        return f'{self._get_autofocus_verdict()} in AutoFocus'
+
+    @staticmethod
+    def _get_transient_id():
+        return f'transient:judgement-{uuid4()}'
+
+    def _get_autofocus_verdict(self):
+        try:
+            source = self.response['indicator']['latestPanVerdicts']
+            key = 'WF_SAMPLE' if source.get('WF_SAMPLE') else 'PAN_DB'
+            return source[key]
+        except KeyError:
+            raise AutofocusDataError
 
     def _get_disposition(self):
-        source = self.response['indicator']['latestPanVerdicts']
-
-        key = 'WF_SAMPLE' if source.get('WF_SAMPLE') else 'PAN_DB'
-
+        autofocus_verdict = self._get_autofocus_verdict()
         return (
-            STATUS_MAPPING[source[key]]['disposition'],
-            STATUS_MAPPING[source[key]]['disposition_name']
+            STATUS_MAPPING[autofocus_verdict]['disposition'],
+            STATUS_MAPPING[autofocus_verdict]['disposition_name']
         )
 
     def _get_observable(self):
@@ -61,14 +126,14 @@ class Entity:
         start_time = datetime.utcnow()
 
         if self.observable['type'] == 'sha256':
-            return {'start_time': self._time_to_ctr_format(start_time)}
-
+            end_time = datetime(2525, 1, 1)
         else:
             end_time = start_time + ENTITY_LIFETIME
-            return {
-                'start_time': self._time_to_ctr_format(start_time),
-                'end_time': self._time_to_ctr_format(end_time)
-            }
+
+        return {
+            'start_time': self._time_to_ctr_format(start_time),
+            'end_time': self._time_to_ctr_format(end_time)
+        }
 
     @staticmethod
     def _time_to_ctr_format(time):

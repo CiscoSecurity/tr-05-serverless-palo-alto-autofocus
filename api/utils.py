@@ -88,6 +88,8 @@ def jsonify_data(data=None):
 
     if g.get('verdicts'):
         result['data']['verdicts'] = format_data(g.verdicts)
+    if g.get('judgements'):
+        result['data']['judgements'] = format_data(g.judgements)
 
     return jsonify(result)
 
@@ -113,10 +115,11 @@ def remove_duplicates(sequence):
 
 def filter_observables(observables):
     supported_types = current_app.config['SUPPORTED_TYPES']
+    limit = current_app.config['CTR_ENTITIES_LIMIT']
     observables = remove_duplicates(observables)
     return list(
         filter(lambda obs: obs['type'] in supported_types, observables)
-    )
+    )[:limit]
 
 
 def get_workers(required_number):
