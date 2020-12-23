@@ -83,6 +83,6 @@ class AutofocusDataError(TRFormattedError):
     def __init__(self):
         super().__init__(
             SERVER_ERROR,
-            'AutoFocus data structure is wrong or damaged. '
-            'If error is repeated, please call support.'
+            'The data structure of AutoFocus has changed. '
+            'The module is broken.'
         )

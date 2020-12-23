@@ -38,7 +38,7 @@ DEFAULT_JUDGEMENT = {
     'type': 'judgement',
 }
 
-BASE_AUTOFOKUS_URI = (
+BASE_AUTOFOCUS_URI = (
     'https://autofocus.paloaltonetworks.com/#/search/indicator/'
 )
 
@@ -89,7 +89,7 @@ class Entity:
             value = quote_plus(value)
 
         uri = urljoin(
-            BASE_AUTOFOKUS_URI, URI_MAPPING[obs_type].format(value=value),
+            BASE_AUTOFOCUS_URI, URI_MAPPING[obs_type].format(value=value),
             allow_fragments=False
         )
         return uri

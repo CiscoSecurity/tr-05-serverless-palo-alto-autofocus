@@ -19,6 +19,11 @@ enrich_api = Blueprint('enrich', __name__)
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
 
 
+def create_entity(response, observable):
+    if response:
+        return Entity(response=response, observable=observable)
+
+
 def get_entities():
     api_key = get_api_key()
     observables = filter_observables(get_observables())
@@ -37,7 +42,7 @@ def get_entities():
             max_workers=get_workers(len(observables))
     ) as executor:
         entities = executor.map(
-            lambda observable: Entity(
+            lambda observable: create_entity(
                 response=client.get_tic_indicator_data(observable),
                 observable=observable,
             ), observables)
@@ -55,7 +60,7 @@ def deliberate_observables():
     g.verdicts = []
 
     for entity in entities:
-        if entity.response:
+        if entity:
             g.verdicts.append(entity.get_verdict())
 
     return jsonify_data()
@@ -72,7 +77,7 @@ def observe_observables():
     g.judgements = []
 
     for entity in entities:
-        if entity.response:
+        if entity:
             judgement = entity.get_judgement()
             verdict = entity.get_verdict()
             verdict['judgement_id'] = judgement['id']

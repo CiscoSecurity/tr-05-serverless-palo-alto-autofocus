@@ -16,11 +16,3 @@ class Config:
     HEALTH_OBSERVABLE = {'type': 'domain', 'value': 'cisco.com'}
 
     SUPPORTED_TYPES = ('ip', 'ipv6', 'domain', 'url', 'sha256')
-
-    CTR_ENTITIES_LIMIT_DEFAULT = 100
-
-    try:
-        CTR_ENTITIES_LIMIT = int(os.environ['CTR_ENTITIES_LIMIT'])
-        assert CTR_ENTITIES_LIMIT > 0
-    except (KeyError, ValueError, AssertionError):
-        CTR_ENTITIES_LIMIT = CTR_ENTITIES_LIMIT_DEFAULT

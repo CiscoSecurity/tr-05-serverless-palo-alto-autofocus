@@ -217,6 +217,6 @@ def test_call_with_response_data_error(
         assert response.status_code == HTTPStatus.OK
         assert response.json == exception_expected_payload(
             SERVER_ERROR,
-            'AutoFocus data structure is wrong or damaged. '
-            'If error is repeated, please call support.'
+            'The data structure of AutoFocus has changed. The '
+            'module is broken.'
         )
