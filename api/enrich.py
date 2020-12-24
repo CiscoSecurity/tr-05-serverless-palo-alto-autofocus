@@ -4,7 +4,7 @@ from functools import partial
 from flask import Blueprint, g, current_app
 
 from api.client import ApiClient
-from api.entities import Entity
+from api.entities import Entity, SOURCE_NAME
 from api.schemas import ObservableSchema
 from api.utils import (
     get_json,
@@ -90,6 +90,29 @@ def observe_observables():
 
 @enrich_api.route('/refer/observables', methods=['POST'])
 def refer_observables():
-    _ = get_api_key()
-    _ = get_observables()
-    return jsonify_data([])
+
+    observables = filter_observables(get_observables())
+    data = []
+
+    if not observables:
+        return jsonify_data(data)
+
+    for observable in observables:
+        type_ = current_app.config['AUTOFOCUS_OBSERVABLE_TYPES'][
+            observable['type']
+        ]
+        data.append(
+            {
+                'id': 'ref-palo-alto-autofocus-search-{type}-{value}'.format(
+                    **observable
+                ),
+                'title': f'Search for this {type_}',
+                'description': f'Look up this {type_} on {SOURCE_NAME}',
+                'url': Entity.get_source_uri(
+                    observable['type'], observable['value']
+                ),
+                'categories': ['Search', SOURCE_NAME]
+            }
+        )
+
+    return jsonify_data(data)

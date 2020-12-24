@@ -8,6 +8,8 @@ ENTITY_LIFETIME = timedelta(days=7)
 
 SCHEMA_VERSION = '1.0.22'
 
+SOURCE_NAME = 'Palo Alto AutoFocus'
+
 STATUS_MAPPING = {
     'BENIGN': {
         'disposition': 1,
@@ -34,7 +36,7 @@ DEFAULT_JUDGEMENT = {
     'priority': 85,
     'schema_version': SCHEMA_VERSION,
     'severity': 'High',
-    'source': 'Palo Alto AutoFocus',
+    'source': SOURCE_NAME,
     'type': 'judgement',
 }
 
@@ -77,13 +79,15 @@ class Entity:
             'id': self._get_transient_id(),
             'observable': self._get_observable(),
             'valid_time': self._get_valid_time(),
-            'source_uri': self._get_source_uri(),
+            'source_uri': self.get_source_uri(
+                self.observable['type'], self.observable['value']
+            ),
             'reason': self._get_reason(),
             **DEFAULT_JUDGEMENT
         }
 
-    def _get_source_uri(self):
-        obs_type, value = self.observable['type'], self.observable['value']
+    @staticmethod
+    def get_source_uri(obs_type, value):
 
         if obs_type == 'url':
             value = quote_plus(value)
