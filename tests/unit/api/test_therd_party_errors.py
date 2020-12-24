@@ -17,6 +17,7 @@ from api.errors import (
 def routes():
     yield '/health'
     yield '/deliberate/observables'
+    yield '/observe/observables'
 
 
 @fixture(scope='module', params=routes(), ids=lambda route: f'POST {route}')

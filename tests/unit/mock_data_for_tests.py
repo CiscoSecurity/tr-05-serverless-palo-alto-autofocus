@@ -44,7 +44,47 @@ INTEGRATION_IP_RESPONSE_MOCK = {
             }
         }
     },
-    '/observe/observables': {'data': {}},
+    '/observe/observables': {
+        "data": {
+            "judgements": {
+                "count": 1,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "disposition": 2,
+                        "disposition_name": "Malicious",
+                        "observable": {
+                            "type": "ip",
+                            "value": "103.110.84.196"
+                        },
+                        "priority": 85,
+                        "reason": "MALWARE in AutoFocus",
+                        "schema_version": "1.0.22",
+                        "severity": "High",
+                        "source": "Palo Alto AutoFocus",
+                        "source_uri": "https://autofocus.paloaltonetworks.com/"
+                                      "#/search/indicator/ipv4_address/"
+                                      "103.110.84.196",
+                        "type": "judgement"
+                    }
+                ]
+            },
+            "verdicts": {
+                "count": 1,
+                "docs": [
+                    {
+                        "disposition": 2,
+                        "disposition_name": "Malicious",
+                        "observable": {
+                            "type": "ip",
+                            "value": "103.110.84.196"
+                        },
+                        "type": "verdict"
+                    }
+                ]
+            }
+        }
+    },
     '/refer/observables': {'data': []}
 }
 
@@ -92,7 +132,47 @@ INTEGRATION_IPV6_RESPONSE_MOCK = {
             }
         }
     },
-    '/observe/observables': {'data': {}},
+    '/observe/observables': {
+        "data": {
+            "judgements": {
+                "count": 1,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "disposition": 1,
+                        "disposition_name": "Clean",
+                        "observable": {
+                            "type": "ipv6",
+                            "value": "2001:db8:85a3:8d3:1319:8a2e:370:7348"
+                        },
+                        "priority": 85,
+                        "reason": "BENIGN in AutoFocus",
+                        "schema_version": "1.0.22",
+                        "severity": "High",
+                        "source": "Palo Alto AutoFocus",
+                        "source_uri": "https://autofocus.paloaltonetworks.com"
+                                      "/#/search/indicator/ipv6_address/"
+                                      "2001:db8:85a3:8d3:1319:8a2e:370:7348",
+                        "type": "judgement"
+                    }
+                ]
+            },
+            "verdicts": {
+                "count": 1,
+                "docs": [
+                    {
+                        "disposition": 1,
+                        "disposition_name": "Clean",
+                        "observable": {
+                            "type": "ipv6",
+                            "value": "2001:db8:85a3:8d3:1319:8a2e:370:7348"
+                        },
+                        "type": "verdict"
+                    }
+                ]
+            }
+        }
+    },
     '/refer/observables': {'data': []}
 }
 
@@ -149,7 +229,46 @@ INTEGRATION_DOMAIN_RESPONSE_MOCK = {
             }
         }
     },
-    '/observe/observables': {'data': {}},
+    '/observe/observables': {
+        "data": {
+            "judgements": {
+                "count": 1,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "disposition": 1,
+                        "disposition_name": "Clean",
+                        "observable": {
+                            "type": "domain",
+                            "value": "cisco.com"
+                        },
+                        "priority": 85,
+                        "reason": "BENIGN in AutoFocus",
+                        "schema_version": "1.0.22",
+                        "severity": "High",
+                        "source": "Palo Alto AutoFocus",
+                        "source_uri": "https://autofocus.paloaltonetworks.com"
+                                      "/#/search/indicator/domain/cisco.com",
+                        "type": "judgement"
+                    }
+                ]
+            },
+            "verdicts": {
+                "count": 1,
+                "docs": [
+                    {
+                        "disposition": 1,
+                        "disposition_name": "Clean",
+                        "observable": {
+                            "type": "domain",
+                            "value": "cisco.com"
+                        },
+                        "type": "verdict"
+                    }
+                ]
+            }
+        }
+    },
     '/refer/observables': {'data': []}
 }
 
@@ -197,7 +316,48 @@ INTEGRATION_URL_RESPONSE_MOCK = {
             }
         }
     },
-    '/observe/observables': {'data': {}},
+    '/observe/observables': {
+        "data": {
+            "judgements": {
+                "count": 1,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "disposition": 2,
+                        "disposition_name": "Malicious",
+                        "observable": {
+                            "type": "url",
+                            "value": "http://0win365.com/wp-admin/sites/"
+                        },
+                        "priority": 85,
+                        "reason": "MALWARE in AutoFocus",
+                        "schema_version": "1.0.22",
+                        "severity": "High",
+                        "source": "Palo Alto AutoFocus",
+                        "source_uri": "https://autofocus.paloaltonetworks.com"
+                                      "/#/search/indicator/url/"
+                                      "http%3A%2F%2F0win365.com%2Fwp-admin%2"
+                                      "Fsites%2F/summary",
+                        "type": "judgement"
+                    }
+                ]
+            },
+            "verdicts": {
+                "count": 1,
+                "docs": [
+                    {
+                        "disposition": 2,
+                        "disposition_name": "Malicious",
+                        "observable": {
+                            "type": "url",
+                            "value": "http://0win365.com/wp-admin/sites/"
+                        },
+                        "type": "verdict"
+                    }
+                ]
+            }
+        }
+    },
     '/refer/observables': {'data': []}
 }
 
@@ -327,7 +487,50 @@ INTEGRATION_SHA256_RESPONSE_MOCK = {
             }
         }
     },
-    '/observe/observables': {'data': {}},
+    '/observe/observables': {
+        "data": {
+            "judgements": {
+                "count": 1,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "disposition": 3,
+                        "disposition_name": "Suspicious",
+                        "observable": {
+                            "type": "sha256",
+                            "value": "7fa2c54d7dabb0503d75bdd13cc4d6a6520516a9"
+                                     "90fb7879ae052bad9520763b"
+                        },
+                        "priority": 85,
+                        "reason": "GRAYWARE in AutoFocus",
+                        "schema_version": "1.0.22",
+                        "severity": "High",
+                        "source": "Palo Alto AutoFocus",
+                        "source_uri": "https://autofocus.paloaltonetworks.com"
+                                      "/#/search/indicator/sha256/7fa2c54d7dab"
+                                      "b0503d75bdd13cc4d6a6520516a990fb7879ae"
+                                      "052bad9520763b",
+                        "type": "judgement"
+                    }
+                ]
+            },
+            "verdicts": {
+                "count": 1,
+                "docs": [
+                    {
+                        "disposition": 3,
+                        "disposition_name": "Suspicious",
+                        "observable": {
+                            "type": "sha256",
+                            "value": "7fa2c54d7dabb0503d75bdd13cc4d6a6520516a9"
+                                     "90fb7879ae052bad9520763b"
+                        },
+                        "type": "verdict"
+                    }
+                ]
+            }
+        }
+    },
     '/refer/observables': {'data': []}
 }
 
