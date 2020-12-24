@@ -18,7 +18,8 @@ from tests.unit.mock_data_for_tests import (
     ENTITY_LIFETIME_MOCK
 )
 from api.errors import (
-    INVALID_ARGUMENT
+    INVALID_ARGUMENT,
+    SERVER_ERROR
 )
 
 
@@ -128,15 +129,32 @@ def valid_call(request):
     return request.param
 
 
-def assert_verdicts(response, call, test_data):
-    valid_time = response['data']['verdicts']['docs'][0].pop('valid_time')
-    if call.json[0]['type'] == 'sha256':
-        assert valid_time['start_time']
+def assert_valid_time(valid_time, type_):
+    if type_ == 'sha256':
+        assert valid_time['end_time'] == '2525-01-01T00:00:00Z'
     else:
         start_time = get_from_isoformat(valid_time['start_time'])
         end_time = get_from_isoformat(valid_time['end_time'])
         assert end_time - start_time == ENTITY_LIFETIME_MOCK
 
+
+def assert_deliberate_observables(response, call, test_data):
+    valid_time = response['data']['verdicts']['docs'][0].pop('valid_time')
+    assert_valid_time(valid_time, call.json[0]['type'])
+    assert response == test_data
+
+
+def assert_observe_observables(response, call, test_data):
+    verdict = response['data']['verdicts']
+    judgement = response['data']['judgements']
+    assert_valid_time(
+        verdict['docs'][0].pop('valid_time'), call.json[0]['type']
+    )
+    assert_valid_time(
+        judgement['docs'][0].pop('valid_time'), call.json[0]['type']
+    )
+    assert verdict['docs'][0].pop('judgement_id') == \
+           judgement['docs'][0].pop('id')
     assert response == test_data
 
 
@@ -154,7 +172,11 @@ def test_enrich_call_success(
 
     response = response.json
     if route == '/deliberate/observables':
-        assert_verdicts(
+        assert_deliberate_observables(
+            response, valid_call, valid_call.integration_mock_response[route]
+        )
+    elif route == '/observe/observables':
+        assert_observe_observables(
             response, valid_call, valid_call.integration_mock_response[route]
         )
 
@@ -179,3 +201,22 @@ def test_enrich_call_with_404_observable(
     assert response.json == (
         {'data': {}} if route != '/refer/observables' else {'data': []}
     )
+
+
+def test_call_with_response_data_error(
+        route, client, valid_jwt, valid_json, exception_expected_payload,
+        mock_request_to_autofocus, mock_autofocus_response_data
+):
+    if route != '/refer/observables':
+        mock_request_to_autofocus.return_value = mock_autofocus_response_data(
+            status_code=HTTPStatus.OK,
+            payload={'abracadabra': 'data'}
+        )
+        response = client.post(route, headers=get_headers(valid_jwt),
+                               json=valid_json)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json == exception_expected_payload(
+            SERVER_ERROR,
+            'The data structure of AutoFocus has changed. The '
+            'module is broken.'
+        )

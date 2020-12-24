@@ -19,15 +19,18 @@ enrich_api = Blueprint('enrich', __name__)
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
 
 
-@enrich_api.route('/deliberate/observables', methods=['POST'])
-def deliberate_observables():
+def create_entity(response, observable):
+    if response:
+        return Entity(response=response, observable=observable)
+
+
+def get_entities():
     api_key = get_api_key()
     observables = filter_observables(get_observables())
 
     if not observables:
-        return jsonify_data()
+        return {}
 
-    g.verdicts = []
     ApiClient.health_test_observable = current_app.config['HEALTH_OBSERVABLE']
     client = ApiClient(
         api_key=api_key,
@@ -39,13 +42,25 @@ def deliberate_observables():
             max_workers=get_workers(len(observables))
     ) as executor:
         entities = executor.map(
-            lambda observable: Entity(
+            lambda observable: create_entity(
                 response=client.get_tic_indicator_data(observable),
                 observable=observable,
             ), observables)
 
+    return entities
+
+
+@enrich_api.route('/deliberate/observables', methods=['POST'])
+def deliberate_observables():
+    entities = get_entities()
+
+    if not entities:
+        return jsonify_data()
+
+    g.verdicts = []
+
     for entity in entities:
-        if entity.response:
+        if entity:
             g.verdicts.append(entity.get_verdict())
 
     return jsonify_data()
@@ -53,9 +68,24 @@ def deliberate_observables():
 
 @enrich_api.route('/observe/observables', methods=['POST'])
 def observe_observables():
-    _ = get_api_key()
-    _ = get_observables()
-    return jsonify_data({})
+    entities = get_entities()
+
+    if not entities:
+        return jsonify_data()
+
+    g.verdicts = []
+    g.judgements = []
+
+    for entity in entities:
+        if entity:
+            judgement = entity.get_judgement()
+            verdict = entity.get_verdict()
+            verdict['judgement_id'] = judgement['id']
+
+            g.judgements.append(judgement)
+            g.verdicts.append(verdict)
+
+    return jsonify_data()
 
 
 @enrich_api.route('/refer/observables', methods=['POST'])
