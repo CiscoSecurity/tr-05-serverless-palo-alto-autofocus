@@ -88,6 +88,8 @@ def jsonify_data(data=None):
 
     if g.get('verdicts'):
         result['data']['verdicts'] = format_data(g.verdicts)
+    if g.get('judgements'):
+        result['data']['judgements'] = format_data(g.judgements)
 
     return jsonify(result)
 
