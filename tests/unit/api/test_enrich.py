@@ -158,6 +158,10 @@ def assert_observe_observables(response, call, test_data):
     assert response == test_data
 
 
+def assert_refer_observables(response, test_data):
+    assert response == test_data
+
+
 def test_enrich_call_success(
         route, valid_call, client, valid_jwt,
         mock_request_to_autofocus, mock_autofocus_response_data
@@ -179,6 +183,10 @@ def test_enrich_call_success(
         assert_observe_observables(
             response, valid_call, valid_call.integration_mock_response[route]
         )
+    elif route == '/refer/observables':
+        assert_refer_observables(
+            response, valid_call.integration_mock_response[route]
+        )
 
 
 @fixture(scope='module')
@@ -191,16 +199,15 @@ def test_enrich_call_with_404_observable(
         mock_request_to_autofocus, mock_autofocus_response_data,
 
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.NOT_FOUND
-    )
-    response = client.post(route, headers=get_headers(valid_jwt),
-                           json=observable_404)
+    if route != '/refer/observables':
+        mock_request_to_autofocus.return_value = mock_autofocus_response_data(
+            status_code=HTTPStatus.NOT_FOUND
+        )
+        response = client.post(route, headers=get_headers(valid_jwt),
+                               json=observable_404)
 
-    assert response.status_code == HTTPStatus.OK
-    assert response.json == (
-        {'data': {}} if route != '/refer/observables' else {'data': []}
-    )
+        assert response.status_code == HTTPStatus.OK
+        assert response.json == {'data': {}}
 
 
 def test_call_with_response_data_error(

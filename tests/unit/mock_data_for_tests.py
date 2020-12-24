@@ -85,7 +85,20 @@ INTEGRATION_IP_RESPONSE_MOCK = {
             }
         }
     },
-    '/refer/observables': {'data': []}
+    '/refer/observables': {
+        'data': [
+            {
+                "categories": [
+                    "Search",
+                    "Palo Alto AutoFocus"
+                ],
+                "description": "Look up this IP on Palo Alto AutoFocus",
+                "id": "ref-palo-alto-autofocus-search-ip-103.110.84.196",
+                "title": "Search for this IP",
+                "url": "https://autofocus.paloaltonetworks.com/#/search/"
+                       "indicator/ipv4_address/103.110.84.196"
+            }]
+    }
 }
 
 AUTOFOCUS_IPV6_RESPONSE_MOCK = {
@@ -173,7 +186,23 @@ INTEGRATION_IPV6_RESPONSE_MOCK = {
             }
         }
     },
-    '/refer/observables': {'data': []}
+    '/refer/observables': {
+        'data': [
+            {
+                "categories": [
+                    "Search",
+                    "Palo Alto AutoFocus"
+                ],
+                "description": "Look up this IPv6 on Palo Alto AutoFocus",
+                "id": "ref-palo-alto-autofocus-search-"
+                      "ipv6-2001:db8:85a3:8d3:1319:8a2e:370:7348",
+                "title": "Search for this IPv6",
+                "url": "https://autofocus.paloaltonetworks.com/#/search"
+                       "/indicator/ipv6_address/"
+                       "2001:db8:85a3:8d3:1319:8a2e:370:7348"
+            }
+        ]
+    }
 }
 
 AUTOFOCUS_DOMAIN_RESPONSE_MOCK = {
@@ -269,7 +298,21 @@ INTEGRATION_DOMAIN_RESPONSE_MOCK = {
             }
         }
     },
-    '/refer/observables': {'data': []}
+    '/refer/observables': {
+        'data': [
+            {
+                "categories": [
+                    "Search",
+                    "Palo Alto AutoFocus"
+                ],
+                "description": "Look up this domain on Palo Alto AutoFocus",
+                "id": "ref-palo-alto-autofocus-search-domain-cisco.com",
+                "title": "Search for this domain",
+                "url": "https://autofocus.paloaltonetworks.com/#/search/"
+                       "indicator/domain/cisco.com"
+            }
+        ]
+    }
 }
 
 AUTOFOCUS_URL_RESPONSE_MOCK = {
@@ -358,7 +401,23 @@ INTEGRATION_URL_RESPONSE_MOCK = {
             }
         }
     },
-    '/refer/observables': {'data': []}
+    '/refer/observables': {
+        'data': [
+            {
+                "categories": [
+                    "Search",
+                    "Palo Alto AutoFocus"
+                ],
+                "description": "Look up this URL on Palo Alto AutoFocus",
+                "id": "ref-palo-alto-autofocus-search-url-http://"
+                      "0win365.com/wp-admin/sites/",
+                "title": "Search for this URL",
+                "url": "https://autofocus.paloaltonetworks.com/#/search/"
+                       "indicator/url/http%3A%2F%2F0win365.com%2Fwp-"
+                       "admin%2Fsites%2F/summary"
+            }
+        ]
+    }
 }
 
 AUTOFOCUS_SHA256_RESPONSE_MOCK = {
@@ -531,7 +590,24 @@ INTEGRATION_SHA256_RESPONSE_MOCK = {
             }
         }
     },
-    '/refer/observables': {'data': []}
+    '/refer/observables': {
+        'data': [
+            {
+                "categories": [
+                    "Search",
+                    "Palo Alto AutoFocus"
+                ],
+                "description": "Look up this SHA256 on Palo Alto AutoFocus",
+                "id": "ref-palo-alto-autofocus-search-sha256-"
+                      "7fa2c54d7dabb0503d75bdd13cc4d6a6520516a990fb7879ae052ba"
+                      "d9520763b",
+                "title": "Search for this SHA256",
+                "url": "https://autofocus.paloaltonetworks.com/#/search/"
+                       "indicator/sha256/7fa2c54d7dabb0503d75bdd13cc4d6a"
+                       "6520516a990fb7879ae052bad9520763b"
+            }
+        ]
+    }
 }
 
 ENTITY_LIFETIME_MOCK = timedelta(days=7)

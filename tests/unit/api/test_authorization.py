@@ -11,7 +11,6 @@ def routes():
     yield '/health'
     yield '/deliberate/observables'
     yield '/observe/observables'
-    yield '/refer/observables'
     yield '/respond/observables'
     yield '/respond/trigger'
 
