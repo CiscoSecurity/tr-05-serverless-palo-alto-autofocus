@@ -109,8 +109,10 @@ class Entity:
         try:
             source = self.response['indicator']['latestPanVerdicts']
             key = 'WF_SAMPLE' if source.get('WF_SAMPLE') else 'PAN_DB'
-            return source[key]
-        except KeyError:
+            autofocus_verdict = source[key]
+            assert autofocus_verdict in STATUS_MAPPING
+            return autofocus_verdict
+        except (KeyError, AssertionError):
             raise AutofocusDataError
 
     def _get_disposition(self):
