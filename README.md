@@ -251,7 +251,7 @@ header set to `Bearer <JWT>`.
   - Maps the fetched data into appropriate CTIM entities.
   - Returns a list per each of the following CTIM entities (if any extracted):
     - `Verdict`,
-    - `Judgement`,
+    - `Judgement`.
 
 - `POST /refer/observables`
   - Accepts a list of observables and filters out unsupported ones.
@@ -282,4 +282,6 @@ header set to `Bearer <JWT>`.
 
 Data from Palo Alto AutoFocus `indicator.latestPanVerdicts.WF_SAMPLE` 
 or `indicator.latestPanVerdicts.PAN_DB` (can be returned only one variant) 
-is used to generate following CTIM entities depending on the observable type.
+is used to generate following CTIM entities depending on the observable type:
+  - `Verdict`,
+  - `Judgement`.
