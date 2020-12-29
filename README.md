@@ -280,8 +280,8 @@ header set to `Bearer <JWT>`.
 
 ### CTIM Mapping Specifics
 
-Data from Palo Alto AutoFocus `indicator.latestPanVerdicts.WF_SAMPLE` 
-or `indicator.latestPanVerdicts.PAN_DB` (can be returned only one variant) 
-is used to generate following CTIM entities depending on the observable type:
+Data from Palo Alto AutoFocus `indicator.latestPanVerdicts.WF_SAMPLE`
+or `indicator.latestPanVerdicts.PAN_DB` (only one of the options can be returned)
+is used to generate the following CTIM entities depending on the observable type:
   - `Verdict`,
   - `Judgement`.
