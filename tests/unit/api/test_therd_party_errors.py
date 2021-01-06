@@ -16,7 +16,6 @@ from api.errors import (
 
 def routes():
     yield '/health'
-    yield '/deliberate/observables'
     yield '/observe/observables'
 
 
