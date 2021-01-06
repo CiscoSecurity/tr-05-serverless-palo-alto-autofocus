@@ -138,12 +138,6 @@ def assert_valid_time(valid_time, type_):
         assert end_time - start_time == ENTITY_LIFETIME_MOCK
 
 
-def assert_deliberate_observables(response, call, test_data):
-    valid_time = response['data']['verdicts']['docs'][0].pop('valid_time')
-    assert_valid_time(valid_time, call.json[0]['type'])
-    assert response == test_data
-
-
 def assert_observe_observables(response, call, test_data):
     verdict = response['data']['verdicts']
     judgement = response['data']['judgements']
@@ -155,10 +149,6 @@ def assert_observe_observables(response, call, test_data):
     )
     assert verdict['docs'][0].pop('judgement_id') == \
            judgement['docs'][0].pop('id')
-    assert response == test_data
-
-
-def assert_refer_observables(response, test_data):
     assert response == test_data
 
 
@@ -175,18 +165,15 @@ def test_enrich_call_success(
     assert response.status_code == HTTPStatus.OK
 
     response = response.json
+
     if route == '/deliberate/observables':
-        assert_deliberate_observables(
-            response, valid_call, valid_call.integration_mock_response[route]
-        )
+        assert response == valid_call.integration_mock_response[route]
     elif route == '/observe/observables':
         assert_observe_observables(
             response, valid_call, valid_call.integration_mock_response[route]
         )
     elif route == '/refer/observables':
-        assert_refer_observables(
-            response, valid_call.integration_mock_response[route]
-        )
+        assert response == valid_call.integration_mock_response[route]
 
 
 @fixture(scope='module')
@@ -221,9 +208,14 @@ def test_call_with_response_data_error(
         )
         response = client.post(route, headers=get_headers(valid_jwt),
                                json=valid_json)
+
         assert response.status_code == HTTPStatus.OK
-        assert response.json == exception_expected_payload(
-            SERVER_ERROR,
-            'The data structure of AutoFocus has changed. The '
-            'module is broken.'
-        )
+
+        if route == '/deliberate/observables':
+            assert response.json == {'data': {}}
+        else:
+            assert response.json == exception_expected_payload(
+                SERVER_ERROR,
+                'The data structure of AutoFocus has changed. The '
+                'module is broken.'
+            )

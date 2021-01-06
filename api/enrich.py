@@ -52,17 +52,8 @@ def get_entities():
 
 @enrich_api.route('/deliberate/observables', methods=['POST'])
 def deliberate_observables():
-    entities = get_entities()
-
-    if not entities:
-        return jsonify_data()
-
-    g.verdicts = []
-
-    for entity in entities:
-        if entity:
-            g.verdicts.append(entity.get_verdict())
-
+    _ = get_api_key()
+    _ = get_observables()
     return jsonify_data()
 
 
