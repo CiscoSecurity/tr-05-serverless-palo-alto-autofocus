@@ -26,24 +26,7 @@ AUTOFOCUS_IP_RESPONSE_MOCK = {
 }
 
 INTEGRATION_IP_RESPONSE_MOCK = {
-    '/deliberate/observables': {
-        "data": {
-            "verdicts": {
-                "count": 1,
-                "docs": [
-                    {
-                        "disposition": 2,
-                        "disposition_name": "Malicious",
-                        "observable": {
-                            "type": "ip",
-                            "value": "103.110.84.196"
-                        },
-                        "type": "verdict"
-                    }
-                ]
-            }
-        }
-    },
+    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -127,24 +110,7 @@ AUTOFOCUS_IPV6_RESPONSE_MOCK = {
 }
 
 INTEGRATION_IPV6_RESPONSE_MOCK = {
-    '/deliberate/observables': {
-        "data": {
-            "verdicts": {
-                "count": 1,
-                "docs": [
-                    {
-                        "disposition": 1,
-                        "disposition_name": "Clean",
-                        "observable": {
-                            "type": "ipv6",
-                            "value": "2001:db8:85a3:8d3:1319:8a2e:370:7348"
-                        },
-                        "type": "verdict"
-                    }
-                ]
-            }
-        }
-    },
+    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -240,24 +206,7 @@ AUTOFOCUS_DOMAIN_RESPONSE_MOCK = {
 }
 
 INTEGRATION_DOMAIN_RESPONSE_MOCK = {
-    '/deliberate/observables': {
-        "data": {
-            "verdicts": {
-                "count": 1,
-                "docs": [
-                    {
-                        "disposition": 1,
-                        "disposition_name": "Clean",
-                        "observable": {
-                            "type": "domain",
-                            "value": "cisco.com"
-                        },
-                        "type": "verdict"
-                    }
-                ]
-            }
-        }
-    },
+    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -341,24 +290,7 @@ AUTOFOCUS_URL_RESPONSE_MOCK = {
 }
 
 INTEGRATION_URL_RESPONSE_MOCK = {
-    '/deliberate/observables': {
-        "data": {
-            "verdicts": {
-                "count": 1,
-                "docs": [
-                    {
-                        "disposition": 2,
-                        "disposition_name": "Malicious",
-                        "observable": {
-                            "type": "url",
-                            "value": "http://0win365.com/wp-admin/sites/"
-                        },
-                        "type": "verdict"
-                    }
-                ]
-            }
-        }
-    },
+    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -527,25 +459,7 @@ AUTOFOCUS_SHA256_RESPONSE_MOCK = {
 }
 
 INTEGRATION_SHA256_RESPONSE_MOCK = {
-    '/deliberate/observables': {
-        "data": {
-            "verdicts": {
-                "count": 1,
-                "docs": [
-                    {
-                        "disposition": 3,
-                        "disposition_name": "Suspicious",
-                        "observable": {
-                            "type": "sha256",
-                            "value": "7fa2c54d7dabb0503d75bdd13cc4d6a6520516"
-                                     "a990fb7879ae052bad9520763b"
-                        },
-                        "type": "verdict"
-                    }
-                ]
-            }
-        }
-    },
+    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
