@@ -23,6 +23,10 @@ STATUS_MAPPING = {
         'disposition': 2,
         'disposition_name': 'Malicious'
     },
+    'C2': {
+        'disposition': 2,
+        'disposition_name': 'Malicious'
+    },
     'GRAYWARE': {
         'disposition': 3,
         'disposition_name': 'Suspicious'
