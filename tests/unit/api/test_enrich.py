@@ -15,7 +15,8 @@ from tests.unit.mock_data_for_tests import (
     INTEGRATION_IPV6_RESPONSE_MOCK,
     INTEGRATION_DOMAIN_RESPONSE_MOCK,
     INTEGRATION_SHA256_RESPONSE_MOCK,
-    ENTITY_LIFETIME_MOCK
+    ENTITY_LIFETIME_MOCK,
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 )
 from api.errors import (
     INVALID_ARGUMENT,
@@ -66,10 +67,14 @@ def invalid_json_call(request):
 
 def test_enrich_call_with_valid_jwt_but_invalid_json(
         route, client, valid_jwt, invalid_json_call,
-        exception_expected_payload
+        mock_request, mock_response_data, exception_expected_payload
 ):
+    mock_request.return_value = mock_response_data(
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
     response = client.post(route,
-                           headers=get_headers(valid_jwt),
+                           headers=get_headers(valid_jwt()),
                            json=invalid_json_call.json)
     assert response.status_code == HTTPStatus.OK
     assert response.json == exception_expected_payload(
@@ -154,14 +159,16 @@ def assert_observe_observables(response, call, test_data):
 
 def test_enrich_call_success(
         route, valid_call, client, valid_jwt,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.OK,
-        payload=valid_call.autofocus_mock_response
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(payload=valid_call.autofocus_mock_response)
     )
-    response = client.post(route, headers=get_headers(valid_jwt),
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_call.json)
+
     assert response.status_code == HTTPStatus.OK
 
     response = response.json
@@ -183,14 +190,16 @@ def observable_404():
 
 def test_enrich_call_with_404_observable(
         route, client, valid_jwt, observable_404,
-        mock_request_to_autofocus, mock_autofocus_response_data,
+        mock_request, mock_response_data,
 
 ):
     if route != '/refer/observables':
-        mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-            status_code=HTTPStatus.NOT_FOUND
+        mock_request.side_effect = (
+            mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+            mock_response_data(status_code=HTTPStatus.NOT_FOUND)
         )
-        response = client.post(route, headers=get_headers(valid_jwt),
+
+        response = client.post(route, headers=get_headers(valid_jwt()),
                                json=observable_404)
 
         assert response.status_code == HTTPStatus.OK
@@ -199,14 +208,15 @@ def test_enrich_call_with_404_observable(
 
 def test_call_with_response_data_error(
         route, client, valid_jwt, valid_json, exception_expected_payload,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
     if route != '/refer/observables':
-        mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-            status_code=HTTPStatus.OK,
-            payload={'abracadabra': 'data'}
+        mock_request.side_effect = (
+            mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+            mock_response_data(payload={'abracadabra': 'data'})
         )
-        response = client.post(route, headers=get_headers(valid_jwt),
+
+        response = client.post(route, headers=get_headers(valid_jwt()),
                                json=valid_json)
 
         assert response.status_code == HTTPStatus.OK

@@ -4,6 +4,7 @@ from http import HTTPStatus
 from pytest import fixture
 
 from api.errors import INVALID_ARGUMENT
+from tests.unit.mock_data_for_tests import EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 from .utils import get_headers
 
 WrongCall = namedtuple('WrongCall', ('endpoint', 'payload', 'message'))
@@ -76,12 +77,19 @@ def invalid_argument_expected_payload():
 
 
 def test_dashboard_call_with_wrong_payload(wrong_call, client, valid_jwt,
+                                           mock_request, mock_response_data,
                                            invalid_argument_expected_payload):
+
+    mock_request.return_value = mock_response_data(
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
     response = client.post(
         path=wrong_call.endpoint,
-        headers=get_headers(valid_jwt),
+        headers=get_headers(valid_jwt()),
         json=wrong_call.payload
     )
+
     assert response.status_code == HTTPStatus.OK
     assert response.json == invalid_argument_expected_payload(
         wrong_call.message
@@ -99,6 +107,12 @@ def route(request):
     return request.param
 
 
-def test_dashboard_call_success(route, client, valid_jwt):
-    response = client.post(route, headers=get_headers(valid_jwt))
+def test_dashboard_call_success(
+        route, client, valid_jwt, mock_request, mock_response_data
+):
+    mock_request.return_value = mock_response_data(
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
+    response = client.post(route, headers=get_headers(valid_jwt()))
     assert response.status_code == HTTPStatus.OK

@@ -5,6 +5,7 @@ from pytest import fixture
 
 from api.errors import INVALID_ARGUMENT
 from .utils import get_headers
+from tests.unit.mock_data_for_tests import EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 
 InvalidJsonCall = namedtuple(
     'InvalidJsonCall', ('route', 'json', 'message_template', 'text')
@@ -82,11 +83,17 @@ def invalid_json_call(request):
 
 def test_respond_call_with_valid_jwt_but_invalid_json(
         client, valid_jwt, invalid_json_call,
+        mock_request, mock_response_data,
         exception_expected_payload
 ):
+    mock_request.return_value = mock_response_data(
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
     response = client.post(invalid_json_call.route,
-                           headers=get_headers(valid_jwt),
+                           headers=get_headers(valid_jwt()),
                            json=invalid_json_call.json)
+
     assert response.status_code == HTTPStatus.OK
     assert response.json == exception_expected_payload(
         INVALID_ARGUMENT,
@@ -115,7 +122,14 @@ def valid_json(route):
                 'observable_value': 'cisco.com'}
 
 
-def test_respond_call_success(route, client, valid_jwt, valid_json):
-    response = client.post(route, headers=get_headers(valid_jwt),
+def test_respond_call_success(
+        route, client, valid_jwt, valid_json, mock_request, mock_response_data
+):
+    mock_request.return_value = mock_response_data(
+        payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
+    )
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_json)
+
     assert response.status_code == HTTPStatus.OK

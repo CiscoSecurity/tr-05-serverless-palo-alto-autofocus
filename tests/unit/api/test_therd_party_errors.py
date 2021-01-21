@@ -5,6 +5,7 @@ from pytest import fixture
 from requests.exceptions import SSLError
 
 from .utils import get_headers
+from tests.unit.mock_data_for_tests import EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 from api.errors import (
     AUTH_ERROR,
     NOT_FOUND,
@@ -26,12 +27,14 @@ def route(request):
 
 def test_call_with_401(
         route, client, valid_jwt, valid_json, exception_expected_payload,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.UNAUTHORIZED
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(status_code=HTTPStatus.UNAUTHORIZED)
     )
-    response = client.post(route, headers=get_headers(valid_jwt),
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_json)
 
     assert response.status_code == HTTPStatus.OK
@@ -43,12 +46,14 @@ def test_call_with_401(
 
 def test_call_with_404(
         route, client, valid_jwt, valid_json, exception_expected_payload,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.NOT_FOUND
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(status_code=HTTPStatus.NOT_FOUND)
     )
-    response = client.post(route, headers=get_headers(valid_jwt),
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_json)
 
     assert response.status_code == HTTPStatus.OK
@@ -60,12 +65,14 @@ def test_call_with_404(
 
 def test_call_with_429(
         route, client, valid_jwt, valid_json, exception_expected_payload,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.TOO_MANY_REQUESTS
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(status_code=HTTPStatus.TOO_MANY_REQUESTS)
     )
-    response = client.post(route, headers=get_headers(valid_jwt),
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_json)
 
     assert response.status_code == HTTPStatus.OK
@@ -78,12 +85,14 @@ def test_call_with_429(
 
 def test_call_with_500_plus(
         route, client, valid_jwt, valid_json, exception_expected_payload,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data(
-        status_code=HTTPStatus.SERVICE_UNAVAILABLE
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(status_code=HTTPStatus.SERVICE_UNAVAILABLE)
     )
-    response = client.post(route, headers=get_headers(valid_jwt),
+
+    response = client.post(route, headers=get_headers(valid_jwt()),
                            json=valid_json)
 
     assert response.status_code == HTTPStatus.OK
@@ -94,13 +103,17 @@ def test_call_with_500_plus(
 
 
 def test_call_with_ssl_error(
-        route, client, valid_jwt, valid_json, exception_expected_payload
+        route, client, valid_jwt, valid_json,
+         mock_response_data, exception_expected_payload
 ):
     with patch('requests.get') as mock_request:
         mock_request.reason.args.__getitem__().verify_message = \
             'self signed certificate'
-        mock_request.side_effect = SSLError(mock_request)
-        response = client.post(route, headers=get_headers(valid_jwt),
+        mock_request.side_effect = (
+            mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+            SSLError(mock_request)
+        )
+        response = client.post(route, headers=get_headers(valid_jwt()),
                                json=valid_json)
 
     assert response.status_code == HTTPStatus.OK
