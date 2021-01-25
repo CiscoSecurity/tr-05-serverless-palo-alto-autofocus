@@ -3,6 +3,7 @@ from http import HTTPStatus
 from pytest import fixture
 
 from .utils import get_headers
+from tests.unit.mock_data_for_tests import EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 
 
 def routes():
@@ -16,10 +17,14 @@ def route(request):
 
 def test_health_call_success(
         route, client, valid_jwt,
-        mock_request_to_autofocus, mock_autofocus_response_data
+        mock_request, mock_response_data
 ):
-    mock_request_to_autofocus.return_value = mock_autofocus_response_data()
-    response = client.post(route, headers=get_headers(valid_jwt))
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data()
+    )
+
+    response = client.post(route, headers=get_headers(valid_jwt()))
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == {'data': {'status': 'ok'}}

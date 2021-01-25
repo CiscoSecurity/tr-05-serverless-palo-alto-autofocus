@@ -1,22 +1,16 @@
-from datetime import datetime
 from http import HTTPStatus
 from unittest.mock import patch, MagicMock
 
-from authlib.jose import jwt
+import jwt
 from pytest import fixture
 
 from app import app
+from tests.unit.mock_data_for_tests import PRIVATE_KEY
 
 
 @fixture(scope='session')
-def secret_key():
-    # Generate some string based on the current datetime.
-    return datetime.utcnow().isoformat()
-
-
-@fixture(scope='session')
-def client(secret_key):
-    app.secret_key = secret_key
+def client():
+    app.rsa_private_key = PRIVATE_KEY
 
     app.testing = True
 
@@ -26,13 +20,32 @@ def client(secret_key):
 
 @fixture(scope='session')
 def valid_jwt(client):
-    header = {'alg': 'HS256'}
+    def _make_jwt(
+            key='some_key',
+            jwks_host='visibility.amp.cisco.com',
+            aud='http://localhost',
+            limit=100,
+            kid='02B1174234C29F8EFB69911438F597FF3FFEE6B7',
+            wrong_structure=False
+    ):
+        payload = {
+            'key': key,
+            'jwks_host': jwks_host,
+            'aud': aud,
+            'CTR_ENTITIES_LIMIT': limit
+        }
 
-    payload = {'key': 'some_key'}
+        if wrong_structure:
+            payload.pop('key')
 
-    secret_key = client.application.secret_key
+        return jwt.encode(
+            payload, client.application.rsa_private_key, algorithm='RS256',
+            headers={
+                'kid': kid
+            }
+        )
 
-    return jwt.encode(header, payload, secret_key).decode('ascii')
+    return _make_jwt
 
 
 @fixture(scope='module')
@@ -41,13 +54,13 @@ def valid_json():
 
 
 @fixture(scope='function')
-def mock_request_to_autofocus():
+def mock_request():
     with patch('requests.get') as mock_request:
         yield mock_request
 
 
 @fixture(scope='function')
-def mock_autofocus_response_data():
+def mock_response_data():
     def _set_data(status_code=None, payload=None):
         mock_data = MagicMock()
 
