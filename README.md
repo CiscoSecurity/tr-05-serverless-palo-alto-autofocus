@@ -131,7 +131,7 @@ old `URL` forever.
 
 Now, the only thing left to do is to follow one of these URLs to navigate 
 to SecureX Threat Response page in your region and create the Palo Alto AutoFocus
-module using your Lambda's URL and Have I Been Pwned API key:
+module using your Lambda's URL and Palo Alto AutoFocus API key:
 - US: https://securex.us.security.cisco.com/integrations/available/<...>/new
 - EU: https://securex.eu.security.cisco.com/integrations/available/<...>/new
 - APJC: https://securex.apjc.security.cisco.com/integrations/available/<...>/new 
