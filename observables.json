@@ -1,0 +1,22 @@
+[
+  {
+    "type": "sha256",
+    "value": "7fa2c54d7dabb0503d75bdd13cc4d6a6520516a990fb7879ae052bad9520763b"
+  },
+  {
+    "type": "ip",
+    "value": "103.110.84.196"
+  },
+  {
+    "type": "ipv6",
+    "value": "2001:db8:85a3:8d3:1319:8a2e:370:7348"
+  },
+  {
+    "type": "domain",
+    "value": "cisco.com"
+  },
+  {
+    "type": "url",
+    "value": "http://0win365.com/wp-admin/sites/"
+  }
+]

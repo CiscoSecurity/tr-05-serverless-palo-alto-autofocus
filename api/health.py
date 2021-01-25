@@ -8,6 +8,7 @@ health_api = Blueprint('health', __name__)
 
 @health_api.route('/health', methods=['POST'])
 def health():
+    ApiClient.health_test_observable = current_app.config['HEALTH_OBSERVABLE']
     client = ApiClient(
         api_key=get_api_key(),
         base_url=current_app.config['AUTOFOCUS_API_URL'],
