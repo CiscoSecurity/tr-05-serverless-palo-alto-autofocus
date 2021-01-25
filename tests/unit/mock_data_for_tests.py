@@ -26,7 +26,6 @@ AUTOFOCUS_IP_RESPONSE_MOCK = {
 }
 
 INTEGRATION_IP_RESPONSE_MOCK = {
-    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -110,7 +109,6 @@ AUTOFOCUS_IPV6_RESPONSE_MOCK = {
 }
 
 INTEGRATION_IPV6_RESPONSE_MOCK = {
-    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -206,7 +204,6 @@ AUTOFOCUS_DOMAIN_RESPONSE_MOCK = {
 }
 
 INTEGRATION_DOMAIN_RESPONSE_MOCK = {
-    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -290,7 +287,6 @@ AUTOFOCUS_URL_RESPONSE_MOCK = {
 }
 
 INTEGRATION_URL_RESPONSE_MOCK = {
-    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {
@@ -459,7 +455,6 @@ AUTOFOCUS_SHA256_RESPONSE_MOCK = {
 }
 
 INTEGRATION_SHA256_RESPONSE_MOCK = {
-    '/deliberate/observables': {"data": {}},
     '/observe/observables': {
         "data": {
             "judgements": {

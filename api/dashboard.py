@@ -1,26 +1,23 @@
 from flask import Blueprint
 
-from api.schemas import DashboardTileSchema, DashboardTileDataSchema
-from api.utils import jsonify_data, get_api_key, get_json
+from api.utils import jsonify_data
 
 dashboard_api = Blueprint('dashboard', __name__)
 
 
 @dashboard_api.route('/tiles', methods=['POST'])
 def tiles():
-    _ = get_api_key()
+    # Not implemented
     return jsonify_data([])
 
 
 @dashboard_api.route('/tiles/tile', methods=['POST'])
 def tile():
-    _ = get_api_key()
-    _ = get_json(DashboardTileSchema())
+    # Not implemented
     return jsonify_data({})
 
 
 @dashboard_api.route('/tiles/tile-data', methods=['POST'])
 def tile_data():
-    _ = get_api_key()
-    _ = get_json(DashboardTileDataSchema())
+    # Not implemented
     return jsonify_data({})

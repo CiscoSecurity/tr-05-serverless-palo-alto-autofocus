@@ -104,7 +104,7 @@ def test_call_with_500_plus(
 
 def test_call_with_ssl_error(
         route, client, valid_jwt, valid_json,
-         mock_response_data, exception_expected_payload
+        mock_response_data, exception_expected_payload
 ):
     with patch('requests.get') as mock_request:
         mock_request.reason.args.__getitem__().verify_message = \

@@ -25,7 +25,6 @@ from api.errors import (
 
 
 def routes():
-    yield '/deliberate/observables'
     yield '/observe/observables'
     yield '/refer/observables'
 
@@ -173,9 +172,7 @@ def test_enrich_call_success(
 
     response = response.json
 
-    if route == '/deliberate/observables':
-        assert response == valid_call.integration_mock_response[route]
-    elif route == '/observe/observables':
+    if route == '/observe/observables':
         assert_observe_observables(
             response, valid_call, valid_call.integration_mock_response[route]
         )
@@ -188,44 +185,43 @@ def observable_404():
     return [{'type': 'sha256', 'value': 'anaptanium'}]
 
 
-def test_enrich_call_with_404_observable(
-        route, client, valid_jwt, observable_404,
-        mock_request, mock_response_data,
+def test_enrich_call_with_404_observable(client, valid_jwt, observable_404,
+                                         mock_request, mock_response_data, ):
 
-):
-    if route != '/refer/observables':
-        mock_request.side_effect = (
-            mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
-            mock_response_data(status_code=HTTPStatus.NOT_FOUND)
-        )
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(status_code=HTTPStatus.NOT_FOUND)
+    )
 
-        response = client.post(route, headers=get_headers(valid_jwt()),
-                               json=observable_404)
+    response = client.post('/observe/observables',
+                           headers=get_headers(valid_jwt()),
+                           json=observable_404)
 
-        assert response.status_code == HTTPStatus.OK
-        assert response.json == {'data': {}}
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == {'data': {}}
 
 
-def test_call_with_response_data_error(
-        route, client, valid_jwt, valid_json, exception_expected_payload,
+def test_observe_call_with_response_data_error(
+        client, valid_jwt, valid_json, exception_expected_payload,
         mock_request, mock_response_data
 ):
-    if route != '/refer/observables':
-        mock_request.side_effect = (
-            mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
-            mock_response_data(payload={'abracadabra': 'data'})
-        )
+    mock_request.side_effect = (
+        mock_response_data(payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        mock_response_data(payload={'abracadabra': 'data'})
+    )
 
-        response = client.post(route, headers=get_headers(valid_jwt()),
-                               json=valid_json)
+    response = client.post('/observe/observables',
+                           headers=get_headers(valid_jwt()),
+                           json=valid_json)
 
-        assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.OK
+    assert response.json == exception_expected_payload(
+        SERVER_ERROR,
+        'The data structure of AutoFocus has changed. The '
+        'module is broken.'
+    )
 
-        if route == '/deliberate/observables':
-            assert response.json == {'data': {}}
-        else:
-            assert response.json == exception_expected_payload(
-                SERVER_ERROR,
-                'The data structure of AutoFocus has changed. The '
-                'module is broken.'
-            )
+
+def test_deliberate_call_success(client):
+    response = client.post('/deliberate/observables')
+    assert response.status_code == HTTPStatus.OK
