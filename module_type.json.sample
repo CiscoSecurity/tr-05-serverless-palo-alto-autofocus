@@ -35,14 +35,6 @@
     {
       "id": "refer",
       "description": "Reference links"
-    },
-    {
-      "id": "respond",
-      "description": "Response actions"
-    },
-    {
-      "id": "tiles",
-      "description": "Dashboard tiles"
     }
   ],
   "properties": {
@@ -50,12 +42,7 @@
       "health",
       "observe/observables",
       "deliberate/observables",
-      "refer/observables",
-      "respond/observables",
-      "respond/trigger",
-      "tiles",
-      "tiles/tile",
-      "tiles/tile-data"
+      "refer/observables"
     ],
     "url": "https://ciscohosted.url",
     "auth-type": "configuration-token",
