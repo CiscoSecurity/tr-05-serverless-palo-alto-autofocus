@@ -6,7 +6,7 @@ echo
 echo " Development Dockerfile build script."
 echo
 
-module_name="Palo Alto AutoFocus Relay"
+module_name="Palo Alto AutoFocus"
 image_name="tr-05-palo-alto-autofocus"
 
 CONFIG_FILE=code/container_settings.json
