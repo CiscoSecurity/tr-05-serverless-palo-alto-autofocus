@@ -23,6 +23,7 @@ def calls():
     yield Call('GET', '/tiles', HTTPStatus.METHOD_NOT_ALLOWED)
     yield Call('GET', '/tiles/tile', HTTPStatus.METHOD_NOT_ALLOWED)
     yield Call('GET', '/tiles/tile-data', HTTPStatus.METHOD_NOT_ALLOWED)
+    yield Call('POST', '/watchdog', HTTPStatus.METHOD_NOT_ALLOWED)
 
 
 @fixture(scope='module',

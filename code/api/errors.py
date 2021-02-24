@@ -86,3 +86,11 @@ class AutofocusDataError(TRFormattedError):
             'The data structure of AutoFocus has changed. '
             'The module is broken.'
         )
+
+
+class AutofocusWatchdogError(TRFormattedError):
+    def __init__(self):
+        super().__init__(
+            code='health check failed',
+            message='Invalid Health Check'
+        )
