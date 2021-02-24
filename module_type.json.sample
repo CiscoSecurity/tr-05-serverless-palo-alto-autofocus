@@ -1,0 +1,53 @@
+{
+  "title": "Palo Alto Networks AutoFocus (ITR-TESTING)",
+  "default_name": "Palo Alto Networks AutoFocus",
+  "short_description": "AutoFocus is a cloud-based threat intelligence service that enables you to easily identify critical attacks, based on intelligence from Unit 42, the Palo Alto Networks threat research team.",
+  "description": "Palo Alto Networks AutoFocus is a cloud-based threat intelligence service that enables you to easily identify critical attacks, so that you can triage effectively and take action without requiring additional IT resources. AutoFocus correlates threat data from your network, industry, and global intelligence feeds, and surfaces what’s most important. This includes giving you a direct pipeline to actionable intelligence from Unit 42, the Palo Alto Networks threat research team—AutoFocus lets you know if adversaries and campaigns discovered by Unit 42 have targeted your network, or networks like yours.",
+  "tips": "When configuring this integration, you must gather some information from your account and add the Palo Alto Networks AutoFocus Module\n\n1. Complete the **Add New Palo Alto Networks AutoFocus Module** form:\n    - **Module Name** - Leave the default name or enter a name that is meaningful to you.\n    - **API Key**  - Enter the API Key from your account information\n2. Click **Save** to complete the Palo Alto Networks AutoFocus module configuration",
+  "external_references": [
+    {
+      "label": "Palo Alto Networks AutoFocus",
+      "link": "https://www.paloaltonetworks.com/cortex/autofocus"
+    }
+  ],
+  "configuration_spec": [
+    {
+      "key": "custom_key",
+      "type": "api_key",
+      "label": "API Key",
+      "tooltip": "The Palo Alto Networks AutoFocus API Key",
+      "required": true
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "health",
+      "description": "Healthcheck"
+    },
+    {
+      "id": "deliberate",
+      "description": "Deliberation"
+    },
+    {
+      "id": "observe",
+      "description": "Enrichments"
+    },
+    {
+      "id": "refer",
+      "description": "Reference links"
+    }
+  ],
+  "properties": {
+    "supported-apis": [
+      "health",
+      "observe/observables",
+      "deliberate/observables",
+      "refer/observables"
+    ],
+    "url": "https://ciscohosted.url",
+    "auth-type": "configuration-token",
+    "configuration-token-alg": "RS256",
+    "custom_jwks_host": "visibility.amp.cisco.com"
+  },
+  "logo": "data:image/png;base64,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"
+}
