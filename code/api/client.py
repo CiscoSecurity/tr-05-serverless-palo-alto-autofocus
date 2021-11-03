@@ -83,5 +83,6 @@ class ApiClient:
             raise expected_errors[response.status_code]()
         else:
             raise TRFormattedError(
+                HTTPStatus(response.status_code).phrase,
                 f'Unexpected response from AutoFocus: {response.text}'
             )
