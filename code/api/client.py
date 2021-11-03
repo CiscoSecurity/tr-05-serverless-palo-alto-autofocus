@@ -62,7 +62,8 @@ class ApiClient:
     def _get_response_data(self, response, observable):
         expected_errors = {
             HTTPStatus.UNAUTHORIZED: lambda: AuthorizationError(),
-            HTTPStatus.TOO_MANY_REQUESTS: lambda: AutofocusTooManyRequestsError(),
+            HTTPStatus.TOO_MANY_REQUESTS:
+                lambda: AutofocusTooManyRequestsError(),
             HTTPStatus.CONFLICT: lambda: AuthorizationError(response.text)
         }
 
