@@ -7,7 +7,8 @@ from api.errors import (
     AuthorizationError,
     AutofocusNotFoundError,
     AutofocusTooManyRequestsError,
-    AutofocusServerError
+    AutofocusServerError,
+    TRFormattedError
 )
 
 
@@ -60,8 +61,9 @@ class ApiClient:
 
     def _get_response_data(self, response, observable):
         expected_errors = {
-            HTTPStatus.UNAUTHORIZED: AuthorizationError,
-            HTTPStatus.TOO_MANY_REQUESTS: AutofocusTooManyRequestsError
+            HTTPStatus.UNAUTHORIZED: lambda: AuthorizationError(),
+            HTTPStatus.TOO_MANY_REQUESTS: lambda: AutofocusTooManyRequestsError(),
+            HTTPStatus.CONFLICT: lambda: AuthorizationError(response.text)
         }
 
         if response.status_code == HTTPStatus.OK:
@@ -78,3 +80,7 @@ class ApiClient:
 
         elif response.status_code in expected_errors:
             raise expected_errors[response.status_code]()
+        else:
+            raise TRFormattedError(
+                f'Unexpected response from AutoFocus: {response.text}'
+            )
