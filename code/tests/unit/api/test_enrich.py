@@ -220,8 +220,3 @@ def test_observe_call_with_response_data_error(
         'The data structure of AutoFocus has changed. The '
         'module is broken.'
     )
-
-
-def test_deliberate_call_success(client):
-    response = client.post('/deliberate/observables')
-    assert response.status_code == HTTPStatus.OK
