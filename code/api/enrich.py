@@ -50,12 +50,6 @@ def get_entities():
     return entities
 
 
-@enrich_api.route('/deliberate/observables', methods=['POST'])
-def deliberate_observables():
-    # Not implemented
-    return jsonify_data()
-
-
 @enrich_api.route('/observe/observables', methods=['POST'])
 def observe_observables():
     entities = get_entities()
