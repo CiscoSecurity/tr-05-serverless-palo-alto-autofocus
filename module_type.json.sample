@@ -25,10 +25,6 @@
       "description": "Healthcheck"
     },
     {
-      "id": "deliberate",
-      "description": "Deliberation"
-    },
-    {
       "id": "observe",
       "description": "Enrichments"
     },
@@ -41,7 +37,6 @@
     "supported-apis": [
       "health",
       "observe/observables",
-      "deliberate/observables",
       "refer/observables"
     ],
     "url": "https://ciscohosted.url",
