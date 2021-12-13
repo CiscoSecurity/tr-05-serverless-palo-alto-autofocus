@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import requests
+from requests.exceptions import InvalidHeader
 
 from api.utils import catch_ssl_error
 from api.errors import (
@@ -22,11 +23,14 @@ class ApiClient:
 
     @catch_ssl_error
     def get_autofocus_data(self, observable, endpoint):
-        response = requests.get(
-            url=self._url_for(endpoint),
-            headers=self._get_headers(),
-            params=self._get_tic_params(observable)
-        )
+        try:
+            response = requests.get(
+                url=self._url_for(endpoint),
+                headers=self._get_headers(),
+                params=self._get_tic_params(observable)
+            )
+        except (UnicodeEncodeError, InvalidHeader):
+            raise AuthorizationError
         return self._get_response_data(response, observable)
 
     def get_tic_indicator_data(self, observable):
