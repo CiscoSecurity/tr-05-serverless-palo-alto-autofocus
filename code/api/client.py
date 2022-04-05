@@ -1,13 +1,15 @@
 from http import HTTPStatus
 
 import requests
+from requests.exceptions import InvalidHeader
 
 from api.utils import catch_ssl_error
 from api.errors import (
     AuthorizationError,
     AutofocusNotFoundError,
     AutofocusTooManyRequestsError,
-    AutofocusServerError
+    AutofocusServerError,
+    TRFormattedError
 )
 
 
@@ -21,11 +23,14 @@ class ApiClient:
 
     @catch_ssl_error
     def get_autofocus_data(self, observable, endpoint):
-        response = requests.get(
-            url=self._url_for(endpoint),
-            headers=self._get_headers(),
-            params=self._get_tic_params(observable)
-        )
+        try:
+            response = requests.get(
+                url=self._url_for(endpoint),
+                headers=self._get_headers(),
+                params=self._get_tic_params(observable)
+            )
+        except (UnicodeEncodeError, InvalidHeader):
+            raise AuthorizationError
         return self._get_response_data(response, observable)
 
     def get_tic_indicator_data(self, observable):
@@ -60,8 +65,10 @@ class ApiClient:
 
     def _get_response_data(self, response, observable):
         expected_errors = {
-            HTTPStatus.UNAUTHORIZED: AuthorizationError,
-            HTTPStatus.TOO_MANY_REQUESTS: AutofocusTooManyRequestsError
+            HTTPStatus.UNAUTHORIZED: lambda: AuthorizationError(),
+            HTTPStatus.TOO_MANY_REQUESTS:
+                lambda: AutofocusTooManyRequestsError(),
+            HTTPStatus.CONFLICT: lambda: AuthorizationError(response.text)
         }
 
         if response.status_code == HTTPStatus.OK:
@@ -78,3 +85,8 @@ class ApiClient:
 
         elif response.status_code in expected_errors:
             raise expected_errors[response.status_code]()
+        else:
+            raise TRFormattedError(
+                HTTPStatus(response.status_code).phrase,
+                f'Unexpected response from AutoFocus: {response.text}'
+            )
